@@ -1,10 +1,10 @@
 #include <xc.h>
 
 // #pragma config statements should precede project file includes.
-// Use project enums instead of #define for ON and OFF.
+enum { OFF = 0, ON };
 
 // CONFIG1
-#pragma config FOSC = ECH       // Oscillator Selection Bits (ECH, External Clock, High Power Mode (4-20 MHz): device clock supplied to CLKIN pins)
+#pragma config FOSC = INTOSC    // Oscillator Selection Bits (INTOSC oscillator: I/O function on CLKIN pin)
 #pragma config WDTE = OFF       // Watchdog Timer Enable (WDT disabled. SWDTEN bit is ignored.)
 #pragma config PWRTE = OFF      // Power-up Timer Enable (PWRT disabled)
 #pragma config MCLRE = ON       // MCLR Pin Function Select (MCLR/VPP pin function is MCLR)
@@ -21,7 +21,8 @@
 
 
 /* "_XTAL_FREQ is the oscillator frequency in Hz *after* any internal PLL multiplier has been applied." */
-#define _XTAL_FREQ 31000000
+/* Frequency is set to 500kHz on reset, we can change the oscillator freq / PLL to get this up to 32MHz*/
+#define _XTAL_FREQ 500000
 
 
 #include <stdint.h>
@@ -35,20 +36,17 @@ int main(void) {
     /* Disable Analog functions of C ports */
     ANSELC = 0x00000000;
 
-    /* turn on RC0 */
-    LATC = 0x00000001;
-
     while(1) {
-//        
-//        /* turn on RC3 */
-//        PORTC = PORTC | 0x00001000;
-//
-//        __delay_ms(100);
-//        
-//        /* turn off RC3 */
-//        PORTC = PORTC & 0x11110111;    
-//        
-//        __delay_ms(100);
+        
+        /* turn on RC0 */
+        LATC = 0x00000001;
+
+        __delay_ms(1000);
+        
+        /* turn off RC0 */
+        LATC = 0x00000000;
+        
+        __delay_ms(1000);
     }
     
     return 0;
